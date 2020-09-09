@@ -31,8 +31,6 @@ RUN curl --silent --location "https://github.com/infracost/infracost/releases/la
 # Ensure everything is executable
 RUN chmod +x /usr/local/bin/*
 
-ENV KOPS_STATE_STORE=s3://cloud-platform-kops-state
-
 WORKDIR /root
 
 RUN git clone --depth 1 https://github.com/ministryofjustice/cloud-platform-environments.git
