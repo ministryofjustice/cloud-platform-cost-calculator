@@ -6,7 +6,7 @@ ENV \
   TERRAFORM_PINGDOM_VERSION=1.1.1 \
   TERRAFORM_VERSION=0.12.17
 
-RUN apk --no-cache add git curl ruby
+RUN apk --no-cache add git curl ruby ruby-json
 
 # Install terraform
 RUN curl -sL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip | unzip -d /usr/local/bin -
@@ -33,4 +33,4 @@ RUN chmod +x /usr/local/bin/*
 
 WORKDIR /root
 
-COPY namespace-cost.sh .
+COPY namespace-costs.rb .

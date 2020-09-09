@@ -6,7 +6,7 @@ IMAGE := foo
 build: .built
 
 run: build
-	docker run --rm \
+	@docker run --rm \
 		-e AWS_ACCESS_KEY_ID="$${AWS_ACCESS_KEY_ID}" \
 		-e AWS_SECRET_ACCESS_KEY="$${AWS_SECRET_ACCESS_KEY}" \
 		-e AWS_REGION="$${AWS_REGION}" \
@@ -17,4 +17,4 @@ run: build
     -e PINGDOM_API_KEY="$${PINGDOM_API_KEY}" \
     -e PINGDOM_USER="$${PINGDOM_USER}" \
     -e KOPS_STATE_STORE="$${KOPS_STATE_STORE}" \
-	-it $(IMAGE) ./namespace-cost.sh
+	-it $(IMAGE) ./namespace-costs.rb
