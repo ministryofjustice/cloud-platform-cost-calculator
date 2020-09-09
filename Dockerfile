@@ -37,34 +37,6 @@ RUN chmod +x /usr/local/bin/*
 
 ENV KOPS_STATE_STORE=s3://cloud-platform-kops-state
 
-RUN \
-  apk add \
-    --no-cache \
-    --no-progress \
-    --update \
-    --virtual \
-    build-deps \
-    build-base \
-    bash \
-    ca-certificates \
-    coreutils \
-    curl \
-    findutils \
-    libc-dev \
-    libxml2-dev \
-    libxslt-dev \
-    linux-headers \
-    openssl \
-    openssl-dev \
-    openssh-keygen \
-    python3 \
-    py3-pip \
-    util-linux \
-  \
-  && pip3 install --upgrade pip \
-  && pip3 install pygithub boto3 \
-  && pip3 install awscli
-
 WORKDIR /root
 
 RUN git clone --depth 1 https://github.com/ministryofjustice/cloud-platform-environments.git
