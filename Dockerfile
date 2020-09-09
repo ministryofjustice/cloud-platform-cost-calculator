@@ -33,6 +33,4 @@ RUN chmod +x /usr/local/bin/*
 
 WORKDIR /root
 
-RUN git clone --depth 1 https://github.com/ministryofjustice/cloud-platform-environments.git
-
 COPY namespace-cost.sh .

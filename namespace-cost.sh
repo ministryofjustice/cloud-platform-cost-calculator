@@ -2,6 +2,8 @@
 
 kops export kubecfg live-1.cloud-platform.service.justice.gov.uk
 
+git clone --depth 1 https://github.com/ministryofjustice/cloud-platform-environments.git
+
 export NAMESPACE=cccd-staging
 
 cd cloud-platform-environments/namespaces/live-1.cloud-platform.service.justice.gov.uk/${NAMESPACE}/resources/
