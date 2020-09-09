@@ -4,11 +4,7 @@ ENV \
   KOPS_VERSION=1.15.3 \
   TERRAFORM_AUTH0_VERSION=0.2.1 \
   TERRAFORM_PINGDOM_VERSION=1.1.1 \
-  TERRAFORM_VERSION=0.12.17 \
-  PIPELINE_STATE_BUCKET=cloud-platform-terraform-state \
-  PIPELINE_STATE_KEY_PREFIX="cloud-platform-environments/" \
-  PIPELINE_TERRAFORM_STATE_LOCK_TABLE="cloud-platform-environments-terraform-lock" \
-  PIPELINE_STATE_REGION="eu-west-1"
+  TERRAFORM_VERSION=0.12.17
 
 RUN apk --no-cache add git curl
 
@@ -42,4 +38,3 @@ WORKDIR /root
 RUN git clone --depth 1 https://github.com/ministryofjustice/cloud-platform-environments.git
 
 COPY namespace-cost.sh .
-COPY list.sh .
