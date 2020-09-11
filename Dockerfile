@@ -33,4 +33,4 @@ RUN chmod +x /usr/local/bin/*
 
 WORKDIR /root
 
-COPY namespace-costs.rb .
+COPY post-namespace-costs.rb .

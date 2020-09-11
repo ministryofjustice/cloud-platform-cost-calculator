@@ -1,6 +1,6 @@
 IMAGE := foo
 
-.built: Dockerfile namespace-costs.rb
+.built: Dockerfile post-namespace-costs.rb
 	docker build -t $(IMAGE) .
 	touch .built
 
@@ -18,5 +18,7 @@ run: build
     -e PINGDOM_API_KEY="$${PINGDOM_API_KEY}" \
     -e PINGDOM_USER="$${PINGDOM_USER}" \
     -e KOPS_STATE_STORE="$${KOPS_STATE_STORE}" \
+    -e HOODAW_API_KEY="$${HOODAW_API_KEY}" \
+    -e HOODAW_HOST="$${HOODAW_HOST}" \
 		-v $$(pwd)/data:/root/data \
-	-it $(IMAGE) ./namespace-costs.rb
+	-it $(IMAGE) ./post-namespace-costs.rb
