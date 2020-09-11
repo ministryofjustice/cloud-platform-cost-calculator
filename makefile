@@ -1,7 +1,8 @@
 IMAGE := foo
 
-.built: Dockerfile
+.built: Dockerfile namespace-costs.rb
 	docker build -t $(IMAGE) .
+	touch .built
 
 build: .built
 
@@ -17,4 +18,5 @@ run: build
     -e PINGDOM_API_KEY="$${PINGDOM_API_KEY}" \
     -e PINGDOM_USER="$${PINGDOM_USER}" \
     -e KOPS_STATE_STORE="$${KOPS_STATE_STORE}" \
+		-v $$(pwd)/data:/root/data \
 	-it $(IMAGE) ./namespace-costs.rb
