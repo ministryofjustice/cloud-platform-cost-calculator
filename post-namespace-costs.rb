@@ -58,7 +58,7 @@ def tfinit(namespace)
 end
 
 def namespaces
-  Dir[tfdir("*")].map {|s| s.split("/")[-2]}
+  Dir[tfdir("*")].map { |s| s.split("/")[-2] }
 end
 
 def tfdir(namespace)
