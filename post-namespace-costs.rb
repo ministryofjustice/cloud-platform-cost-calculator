@@ -10,6 +10,7 @@ DATADIR = "/root/data"
 def main
   kops_export
   checkout_env_repo
+  FileUtils.mkdir_p(DATADIR)
 
   # This may fail before it posts the complete list, because the container
   # may run out of space due to having to keep reinstalling terraform
