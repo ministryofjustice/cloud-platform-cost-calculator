@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "fileutils"
 require "json"
 require "open3"
 
