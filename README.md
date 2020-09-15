@@ -1,5 +1,7 @@
 # Cloud Platform Cost Calculator
 
+[![Releases](https://img.shields.io/github/release/ministryofjustice/cloud-platform-cost-calculator/all.svg?style=flat-square)](https://github.com/ministryofjustice/cloud-platform-cost-calculator/releases)
+
 Use [infracost] to work out the running costs of namespaces in the Cloud
 Platform, and post the data to [How Out Of Date Are We][hoodaw]
 
