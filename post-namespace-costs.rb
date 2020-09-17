@@ -65,7 +65,7 @@ end
 # Alter the infracost JSON data, adding shared costs
 def add_shared(json, shared)
   data = JSON.parse(json)
-  data += [ { "name" => "Shared Costs", "monthlyCost" => shared } ]
+  data += [{"name" => "Shared Costs", "monthlyCost" => shared}]
   data.to_json
 end
 
