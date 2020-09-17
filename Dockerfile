@@ -28,9 +28,13 @@ RUN curl -sLo /usr/local/bin/kops https://github.com/kubernetes/kops/releases/do
 RUN curl --silent --location "https://github.com/infracost/infracost/releases/latest/download/infracost-$(uname -s)-amd64.tar.gz" | tar xz -C /tmp \
   && mv /tmp/infracost-$(uname -s | tr '[:upper:]' '[:lower:]')-amd64 /usr/local/bin/infracost
 
+RUN gem install aws-sdk-costexplorer
+
 # Ensure everything is executable
 RUN chmod +x /usr/local/bin/*
 
 WORKDIR /root
 
+RUN mkdir lib
 COPY post-namespace-costs.rb .
+COPY lib/* lib/
