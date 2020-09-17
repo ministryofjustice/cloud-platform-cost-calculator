@@ -18,7 +18,7 @@ class CloudPlatformSharedCosts
     "cloudplatform",
     "cloudplatformtest",
     "concourse",
-    "live-1",
+    "live-1"
   ]
 
   def initialize(params)
@@ -44,18 +44,18 @@ class CloudPlatformSharedCosts
       metrics: ["BlendedCost"],
       time_period: {
         start: start_date,
-        end: end_date,
+        end: end_date
       },
       group_by: [
         {
           type: "DIMENSION",
-          key: "SERVICE",
+          key: "SERVICE"
         },
         {
           type: "TAG",
-          key: "owner",
+          key: "owner"
         }
-      ],
+      ]
     )
 
     raise "More than one page in response. Please add code to iterate over all response pages." if data.next_page?
