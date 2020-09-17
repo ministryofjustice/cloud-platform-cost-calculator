@@ -1,8 +1,12 @@
 #!/usr/bin/env ruby
 
+require "aws-sdk-costexplorer"
+require "date"
 require "fileutils"
 require "json"
 require "open3"
+
+require_relative "./lib/cloud_platform_shared_costs"
 
 ENV_REPO = "cloud-platform-environments"
 CLUSTER = "live-1.cloud-platform.service.justice.gov.uk"
@@ -13,20 +17,42 @@ def main
   checkout_env_repo
   FileUtils.mkdir_p(DATADIR)
 
+  list = namespaces
+
+  shared_cost = CloudPlatformSharedCosts.new(last_month).usd_amount
+  puts "Shared cost: #{shared_cost}"
+  per_namespace_shared_cost = shared_cost / list.size
+  puts "Per namespace shared cost: #{per_namespace_shared_cost}"
+
+  puts per_namespace_shared_cost
+
   # This may fail before it posts the complete list, because the container
   # may run out of space due to having to keep reinstalling terraform
   # providers. So, we shuffle the list of namespaces so that, eventually
   # we'll get through the whole list, if this happens.
-  namespaces
+  list
     .shuffle
-    .each { |namespace| post_costs_to_hoodaw(namespace) }
+    .each { |namespace| post_costs_to_hoodaw(namespace, per_namespace_shared_cost) }
 end
 
-def post_costs_to_hoodaw(namespace)
+def last_month
+  year = Date.today.year
+  month = Date.today.month
+  if month == 1
+    month = 12
+    year -= 1
+  else
+    month -= 1
+  end
+  {month: month, year: year}
+end
+
+def post_costs_to_hoodaw(namespace, shared)
   puts namespace
   tfinit(namespace)
   json = execute "cd #{tfdir(namespace)}; infracost --tfdir . -o json"
   datafile = "#{DATADIR}/#{namespace}.json"
+  json = add_shared(json, shared)
   File.write(datafile, json)
   post_json(namespace, datafile)
 rescue => e
@@ -34,6 +60,13 @@ rescue => e
   # but we don't want that to halt processing of other namespaces.
   puts "ERROR processing #{namespace}:\n#{e.message}"
   puts "Continuing to next namespace"
+end
+
+# Alter the infracost JSON data, adding shared costs
+def add_shared(json, shared)
+  data = JSON.parse(json)
+  data += [ { "name" => "Shared Costs", "monthlyCost" => shared } ]
+  data.to_json
 end
 
 def post_json(namespace, file)
