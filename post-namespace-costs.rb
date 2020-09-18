@@ -120,9 +120,9 @@ def repo_url
 end
 
 def execute(cmd)
-  puts "CMD: #{cmd}"
+  # puts "CMD: #{cmd}"
   stdout, stderr, status = Open3.capture3(cmd)
-  puts "OUTPUT:\n#{stdout}"
+  # puts "OUTPUT:\n#{stdout}"
   unless status.success?
     puts "ERROR: #{stderr}"
     exit 1
