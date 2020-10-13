@@ -7,22 +7,15 @@ require "fileutils"
 require "json"
 require "open3"
 
-require_relative "./lib/aws_costs_by_tag"
+require_relative "./lib/aws_costs_by_namespace"
 
 ENV_REPO = "cloud-platform-environments"
 CLUSTER = "live-1.cloud-platform.service.justice.gov.uk"
 DATADIR = "./data"
 
-def last_month
-  year = Date.today.year
-  month = Date.today.month
-  if month == 1
-    month = 12
-    year -= 1
-  else
-    month -= 1
-  end
-  {month: month, year: year}
-end
+# TODO: Identify shared AWS costs
+# TODO: Add shared team costs
 
-puts AwsCostsByTag.new(last_month.merge(tag: "namespace")).report.to_json
+yesterday = Date.today.prev_day
+
+puts AwsCostsByNamespace.new(start_date: yesterday, end_date: Date.today).report.to_json

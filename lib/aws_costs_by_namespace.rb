@@ -1,11 +1,12 @@
-# Fetch AWS costs for a period, broken down by a tag
-class AwsCostsByTag
-  attr_reader :tag, :year, :month
+# Fetch AWS costs for a period, broken down by namespace tag
+class AwsCostsByNamespace
+  attr_reader :start_date, :end_date
+
+  TAG = "namespace"
 
   def initialize(params)
-    @tag = params.fetch(:tag)
-    @year = params.fetch(:year)
-    @month = params.fetch(:month)
+    @start_date = params.fetch(:start_date).strftime("%Y-%m-%d")
+    @end_date = params.fetch(:end_date).strftime("%Y-%m-%d")
   end
 
   def report
@@ -20,7 +21,10 @@ class AwsCostsByTag
       acc
     end
 
-    add_totals(costs_by_tag)
+    {
+      TAG => add_totals(costs_by_tag),
+      updated_at: Time.now,
+    }
   end
 
   private
@@ -48,13 +52,14 @@ class AwsCostsByTag
 
   def data
     ce = Aws::CostExplorer::Client.new(
+      # todo: move to initialize
       region: "us-east-1", # CostExplorer only works with this region value
       access_key_id: ENV.fetch("AWS_ACCESS_KEY_ID"),
       secret_access_key: ENV.fetch("AWS_SECRET_ACCESS_KEY")
     )
 
     data = ce.get_cost_and_usage(
-      granularity: "MONTHLY",
+      granularity: "DAILY",
       metrics: ["BlendedCost"],
       time_period: {
         start: start_date,
@@ -67,7 +72,7 @@ class AwsCostsByTag
         },
         {
           type: "TAG",
-          key: tag
+          key: TAG
         }
       ]
     )
@@ -76,27 +81,5 @@ class AwsCostsByTag
     raise "More than one entry in results_by_time - I don't know how to handle that." if data.results_by_time.size > 1
 
     data.results_by_time.first.groups
-  end
-
-  # Report start date is the first day of the month
-  def start_date
-    first_of_month(year, month)
-  end
-
-  # Report end date is the first day of the next month
-  def end_date
-    if month == 12
-      y = year + 1
-      m = 1
-    else
-      y = year
-      m = month + 1
-    end
-
-    first_of_month(y, m)
-  end
-
-  def first_of_month(y, m)
-    sprintf("%04d-%02d-%02d", y, m, 1)
   end
 end
