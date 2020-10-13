@@ -14,7 +14,30 @@ class AwsCostsByNamespace
   def report
     tuples = data.map { |cost| hash_from_cost(cost) }
 
-    costs_by_tag = tuples.inject({}) do |acc, h|
+    costs = costs_by_namespace(tuples)
+
+    shared_costs = costs.delete(SHARED_COSTS).values.sum
+    shared_aws_per_namespace = shared_costs / costs.keys.size
+    costs.values.each { |hash| hash["Shared AWS Costs"] = shared_aws_per_namespace }
+
+    {
+      TAG => add_totals(costs),
+      updated_at: Time.now,
+    }
+  end
+
+  private
+
+  # Take output from AWS CostExplorer and convert to a hash
+  #   { [namespace name] => {
+  #     "breakdown" => {
+  #       [resource type] => cost,
+  #       ...
+  #     },
+  #     "total" => [monthly amount]
+  #   }
+  def costs_by_namespace(tuples)
+    tuples.inject({}) do |acc, h|
       tag = h[:tag]
       resource = h[:resource]
       costs = acc[tag] || {}
@@ -22,14 +45,7 @@ class AwsCostsByNamespace
       acc[tag] = costs
       acc
     end
-
-    {
-      TAG => add_totals(costs_by_tag),
-      updated_at: Time.now,
-    }
   end
-
-  private
 
   # { foo: { a: 1, b: 2 } } -> { foo: { breakdown: { a: 1, b: 2 }, total: 3 } }
   def add_totals(hash)
