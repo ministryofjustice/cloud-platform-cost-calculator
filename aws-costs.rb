@@ -16,6 +16,4 @@ DATADIR = "./data"
 # TODO: Identify shared AWS costs
 # TODO: Add shared team costs
 
-yesterday = Date.today.prev_day
-
-puts AwsCostsByNamespace.new(start_date: yesterday, end_date: Date.today).report.to_json
+puts AwsCostsByNamespace.new(date: Date.today).report.to_json
