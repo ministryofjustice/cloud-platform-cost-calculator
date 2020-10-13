@@ -7,26 +7,41 @@ class AwsCostsByNamespace
   SHARED_COSTS = "SHARED_COSTS"
   DAYS_PER_MONTH = 30 # An average, to convert daily amounts to monthly
 
+  # Annual cost of the Cloud Platform team is £1,260,000
+  # This is the monthly cost in USD
+  MONTHLY_TEAM_COST = 136_000
+
   def initialize(params)
     @date = params.fetch(:date) # should be a Date object
   end
 
   def report
     tuples = data.map { |cost| hash_from_cost(cost) }
-
     costs = costs_by_namespace(tuples)
-
-    shared_costs = costs.delete(SHARED_COSTS).values.sum
-    shared_aws_per_namespace = shared_costs / costs.keys.size
-    costs.values.each { |hash| hash["Shared AWS Costs"] = shared_aws_per_namespace }
+    add_shared_aws_costs(costs)
+    add_shared_team_cost(costs)
+    add_totals(costs)
 
     {
-      TAG => add_totals(costs),
+      TAG => costs,
       updated_at: Time.now,
     }
   end
 
   private
+
+  # Add a share of the monthly team cost to each namespace
+  def add_shared_team_cost(costs)
+    cost_per_namespace = MONTHLY_TEAM_COST.to_f / costs.keys.size
+    costs.values.each { |hash| hash["Shared CP Team Costs"] = cost_per_namespace }
+  end
+
+  # Extract total shared AWS cost and divide it evenly over namespaces
+  def add_shared_aws_costs(costs)
+    shared_costs = costs.delete(SHARED_COSTS).values.sum
+    cost_per_namespace = shared_costs / costs.keys.size
+    costs.values.each { |hash| hash["Shared AWS Costs"] = cost_per_namespace }
+  end
 
   # Take output from AWS CostExplorer and convert to a hash
   #   { [namespace name] => {
@@ -48,13 +63,12 @@ class AwsCostsByNamespace
   end
 
   # { foo: { a: 1, b: 2 } } -> { foo: { breakdown: { a: 1, b: 2 }, total: 3 } }
-  def add_totals(hash)
-    hash.inject({}) do |acc, (tag, costs)|
-      acc[tag] = {
-        breakdown: costs,
-        total: costs.values.sum,
+  def add_totals(costs)
+    costs.each do |namespace, resource_costs|
+      costs[namespace] = {
+        breakdown: resource_costs,
+        total: resource_costs.values.sum
       }
-      acc
     end
   end
 
