@@ -1,7 +1,7 @@
 # Fetch AWS costs for a single day, broken down by namespace tag, and multiply
 # all amounts by 30 to get monthly costs
 class AwsCostsByNamespace
-  attr_reader :date
+  attr_reader :date, :access_key_id, :secret_access_key
 
   TAG = "namespace"
   SHARED_COSTS = "SHARED_COSTS"
@@ -11,12 +11,16 @@ class AwsCostsByNamespace
   # This is the monthly cost in USD
   MONTHLY_TEAM_COST = 136_000
 
+  REGION = "us-east-1" # AWS CostExplorer only works with this region value
+
   def initialize(params)
     @date = params.fetch(:date) # should be a Date object
+    @access_key_id = params.fetch(:access_key_id, ENV.fetch("AWS_ACCESS_KEY_ID"))
+    @secret_access_key = params.fetch(:secret_access_key, ENV.fetch("AWS_SECRET_ACCESS_KEY"))
   end
 
   def report
-    tuples = data.map { |cost| hash_from_cost(cost) }
+    tuples = aws_data.map { |cost| hash_from_cost(cost) }
     costs = costs_by_namespace(tuples)
     add_shared_aws_costs(costs)
     add_shared_team_cost(costs)
@@ -84,12 +88,12 @@ class AwsCostsByNamespace
     }
 
   end
-  def data
+
+  def aws_data
     ce = Aws::CostExplorer::Client.new(
-      # todo: move to initialize
-      region: "us-east-1", # CostExplorer only works with this region value
-      access_key_id: ENV.fetch("AWS_ACCESS_KEY_ID"),
-      secret_access_key: ENV.fetch("AWS_SECRET_ACCESS_KEY")
+      region: REGION,
+      access_key_id: access_key_id,
+      secret_access_key: secret_access_key
     )
 
     end_date = date.strftime("%Y-%m-%d")
