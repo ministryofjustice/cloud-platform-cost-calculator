@@ -28,7 +28,7 @@ class AwsCostsByNamespace
 
     {
       TAG => costs,
-      :updated_at => Time.now,
+      :updated_at => Time.now
     }
   end
 
@@ -70,7 +70,7 @@ class AwsCostsByNamespace
     costs.each do |namespace, resource_costs|
       costs[namespace] = {
         breakdown: resource_costs,
-        total: resource_costs.values.sum,
+        total: resource_costs.values.sum
       }
     end
   end
@@ -83,7 +83,7 @@ class AwsCostsByNamespace
     {
       resource: resource_type,
       tag: tag_value,
-      amount: cost.metrics.fetch("BlendedCost").amount.to_f * DAYS_PER_MONTH,
+      amount: cost.metrics.fetch("BlendedCost").amount.to_f * DAYS_PER_MONTH
     }
   end
 
@@ -102,17 +102,17 @@ class AwsCostsByNamespace
       metrics: ["BlendedCost"],
       time_period: {
         start: start_date,
-        end: end_date,
+        end: end_date
       },
       group_by: [
         {
           type: "DIMENSION",
-          key: "SERVICE",
+          key: "SERVICE"
         },
         {
           type: "TAG",
-          key: TAG,
-        },
+          key: TAG
+        }
       ]
     )
 
