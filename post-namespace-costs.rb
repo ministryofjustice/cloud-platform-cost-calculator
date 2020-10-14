@@ -23,8 +23,8 @@ def post_json(json)
     cmd = %[curl -H "X-API-KEY: #{api_key}" -d "$(cat #{file.path})" #{url}]
     execute cmd
   ensure
-     file.close
-     file.unlink   # deletes the temp file
+    file.close
+    file.unlink # deletes the temp file
   end
 end
 
@@ -40,4 +40,3 @@ def execute(cmd)
 end
 
 main
-
