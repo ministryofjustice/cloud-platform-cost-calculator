@@ -1,4 +1,4 @@
-# Cloud Platform Cost Calculator
+# DEPRECATED Cloud Platform Cost Calculator
 
 [![Releases](https://img.shields.io/github/release/ministryofjustice/cloud-platform-cost-calculator/all.svg?style=flat-square)](https://github.com/ministryofjustice/cloud-platform-cost-calculator/releases)
 
